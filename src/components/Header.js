@@ -2,13 +2,17 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { t, color } from 'react-native-tailwindcss';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigationState } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
 import { AntDesign } from '@expo/vector-icons';
 
 import { GRADIENT_COLORS } from '../constants/colors';
 import routes from '../constants/routes';
 
-const Header = ({ navigation, title, back }) => {
+const Header = ({ navigation, title, onDeletePost }) => {
+  const currentScreen = useNavigationState(
+    (state) => state.routeNames[state.index]
+  );
   return (
     <View style={[t.shadowMd, { height: 100 }]}>
       <LinearGradient
@@ -27,7 +31,7 @@ const Header = ({ navigation, title, back }) => {
           <Ripple
             onPress={() => navigation.goBack()}
             rippleColor="white"
-            style={[t.p4, { opacity: !back ? 0 : 1 }]}
+            style={[t.p4, { opacity: currentScreen === routes.Home ? 0 : 1 }]}
           >
             <AntDesign name="arrowleft" size={24} color="white" />
           </Ripple>
@@ -36,15 +40,22 @@ const Header = ({ navigation, title, back }) => {
           </Text>
         </View>
         <View style={[t.flexRow]}>
-          <Ripple
-            onPress={() => navigation.navigate(routes.Create)}
-            rippleColor="white"
-            style={[t.p4]}
-          >
-            <AntDesign name="pluscircle" size={24} color="white" />
-          </Ripple>
+          {currentScreen !== routes.Create && (
+            <Ripple
+              onPress={() => navigation.navigate(routes.Create)}
+              rippleColor="white"
+              style={[t.p4]}
+            >
+              <AntDesign name="pluscircle" size={24} color="white" />
+            </Ripple>
+          )}
+          {onDeletePost && (
+            <Ripple onPress={onDeletePost} rippleColor="white" style={[t.p4]}>
+              <AntDesign name="delete" size={24} color="white" />
+            </Ripple>
+          )}
           <Ripple rippleColor="white" style={[t.p4, t.mR2]}>
-            <AntDesign name="deleteusergroup" size={24} color="white" />
+            <AntDesign name="logout" size={24} color="white" />
           </Ripple>
         </View>
       </LinearGradient>

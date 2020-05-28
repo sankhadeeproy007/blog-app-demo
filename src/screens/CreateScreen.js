@@ -8,9 +8,14 @@ import Button from '../components/Button';
 
 const CreateScreen = ({ navigation }) => {
   const [formState, setFormState] = useState({});
+  const headerProps = {
+    navigation,
+    title: false ? 'Edit Post' : 'Create Post',
+    ...(false && { onDeletePost: () => {} })
+  };
   return (
     <View style={[t.flex1]}>
-      <Header back navigation={navigation} title="Create Post" />
+      <Header {...headerProps} />
       <ScrollView keyboardShouldPersistTaps="never" style={[t.flex1, t.p6]}>
         <Text style={[t.fontBold, t.text2xl]}>Title</Text>
         <TextInput
