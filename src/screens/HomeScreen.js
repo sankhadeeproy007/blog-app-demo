@@ -81,6 +81,11 @@ const HomeScreen = ({ navigation }) => {
     <View style={[t.flex1]}>
       <Header navigation={navigation} title="Blog Posts" />
       <View style={t.flex1}>
+        <Text
+          style={[t.mL5, t.mT5, t.mB3, t.textBlue900, t.fontBold, t.textXl]}
+        >
+          Hello User!
+        </Text>
         <FlatList
           contentContainerStyle={[t.p5]}
           data={DATA}

@@ -63,6 +63,18 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <View style={[t.bgGray100, t.roundedLg, t.p8, t.shadow2xl]}>
+          {!showLogin && (
+            <TextInput
+              value={formState.email}
+              onChangeText={(text) =>
+                setFormState({ ...formState, email: text })
+              }
+              placeholder="Email"
+              textContentType="emailAddress"
+              keyboardType="email-address"
+              style={textInputStyle}
+            />
+          )}
           <TextInput
             value={formState.username}
             onChangeText={(text) =>
@@ -80,17 +92,7 @@ const LoginScreen = ({ navigation }) => {
             secureTextEntry
             style={textInputStyle}
           />
-          {!showLogin && (
-            <TextInput
-              value={formState.confirmPassword}
-              onChangeText={(text) =>
-                setFormState({ ...formState, confirmPassword: text })
-              }
-              placeholder="Confirm password"
-              secureTextEntry
-              style={textInputStyle}
-            />
-          )}
+
           <Button onPress={handleSubmit}>
             <Text
               style={[
