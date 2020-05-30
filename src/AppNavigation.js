@@ -17,8 +17,7 @@ export default function AppNavigation() {
       <StatusBar barStyle="light-content" />
       <Stack.Navigator
         screenOptions={{
-          headerShown: false,
-          gestureEnabled: false
+          headerShown: false
         }}
       >
         <Stack.Screen name={routes.Login} component={LoginScreen} />
