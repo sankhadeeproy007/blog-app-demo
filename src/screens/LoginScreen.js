@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import { t } from 'react-native-tailwindcss';
+import { Auth } from 'aws-amplify';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
+
+import { AuthContext } from '../AuthContext.js';
 
 import Button from '../components/Button';
 
@@ -14,17 +17,45 @@ const LoginScreen = ({ navigation }) => {
   const [showLogin, setShowLogin] = useState(true);
   const [formState, setFormState] = useState({});
 
+  const { setIsSignedIn, setUser } = useContext(AuthContext);
+  async function SignUp() {
+    const { username, password, email } = formState;
+    try {
+      const user = await Auth.signUp({
+        username,
+        password,
+        attributes: {
+          email
+        }
+      });
+      console.log({ user });
+    } catch (error) {
+      console.log('error signing up:', error);
+    }
+  }
+
+  async function SignIn() {
+    const { username, password } = formState;
+    try {
+      const user = await Auth.signIn(username, password);
+      setUser({ username: user.username, email: user.attributes.email });
+      console.log(user, 'user');
+      setIsSignedIn(true);
+    } catch (error) {
+      console.log('error signing in', error);
+    }
+  }
+
   useEffect(() => {
     // clear formState when switching between login an d signup
     setFormState({});
   }, [showLogin]);
 
   const handleSubmit = () => {
-    navigation.navigate(routes.Home);
     if (showLogin) {
-      // call login API
+      SignIn();
     } else {
-      // call sign in API
+      SignUp();
     }
   };
 

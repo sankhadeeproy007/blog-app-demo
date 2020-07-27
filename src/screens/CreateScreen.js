@@ -1,18 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, ScrollView, Text, TextInput } from 'react-native';
 import { t } from 'react-native-tailwindcss';
 import { AntDesign } from '@expo/vector-icons';
+import { API, graphqlOperation } from 'aws-amplify';
+
+import * as mutations from '../graphql/mutations';
+import * as queries from '../graphql/queries';
+import { AuthContext } from '../AuthContext';
 
 import Header from '../components/Header';
 import Button from '../components/Button';
 
-const CreateScreen = ({ navigation }) => {
+const CreateScreen = ({ route, navigation }) => {
   const [formState, setFormState] = useState({});
+  const [loading, setLoading] = useState(false);
+  const { user } = useContext(AuthContext);
+  console.log(route, 'user');
+  const { id } = route?.params || {};
+
+  const handleDelete = async () => {
+    try {
+      await API.graphql(
+        graphqlOperation(mutations.deletePost, {
+          input: { id }
+        })
+      );
+      setFormState({});
+    } catch (error) {
+      console.log(error, 'error');
+    }
+  };
+
   const headerProps = {
     navigation,
-    title: false ? 'Edit Post' : 'Create Post',
-    ...(false && { onDeletePost: () => {} })
+    title: id ? 'Edit Post' : 'Create Post',
+    ...(id && { onDeletePost: handleDelete })
   };
+
+  useEffect(() => {
+    getPostById();
+  }, []);
+
+  const getPostById = async () => {
+    try {
+      const { data } = await API.graphql(
+        graphqlOperation(queries.getPost, {
+          id
+        })
+      );
+      setFormState(data.getPost);
+    } catch (err) {
+      console.log('error creating post:', err);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    if (id) {
+      try {
+        const { title, description } = formState;
+        await API.graphql(
+          graphqlOperation(mutations.updatePost, {
+            input: { id, title, description }
+          })
+        );
+        setFormState({});
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.log('error creating post:', err);
+      }
+    } else {
+      try {
+        const { title, description } = formState;
+        await API.graphql(
+          graphqlOperation(mutations.createPost, {
+            input: { title, description, createdBy: user.email }
+          })
+        );
+        setFormState({});
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        console.log('error creating post:', err);
+      }
+    }
+  };
+
   return (
     <View style={[t.flex1]}>
       <Header {...headerProps} />
@@ -44,7 +118,7 @@ const CreateScreen = ({ navigation }) => {
             { minHeight: 200 }
           ]}
         />
-        <Button>
+        <Button loading={loading} onPress={handleSubmit}>
           <Text
             style={[
               t.textWhite,

@@ -9,8 +9,11 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.6",
+    "@react-native-community/netinfo": "^5.9.2",
     "@react-navigation/native": "^5.4.2",
     "@react-navigation/stack": "^5.3.9",
+    "aws-amplify": "^3.0.13",
+    "aws-amplify-react-native": "^4.2.0",
     "expo": "~37.0.3",
     "expo-linear-gradient": "~8.1.0",
     "react": "~16.9.0",
